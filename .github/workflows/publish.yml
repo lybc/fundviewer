@@ -6,9 +6,9 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,20 +19,18 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    
-    # Runs a single command using the runners shell
-    - name: Build pages
-      uses: actions/checkout@v2
-      run: |
-        npm install
-        npm run-script build
-    
-    - name: Copy folder content recursively to remote
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
+      # Runs a single command using the runners shell
+      - uses: actions/checkout@v2
+      - name: Build pages
+        run: |
+          npm install
+          npm run-script build
+
+      - name: copy file via ssh password
         uses: appleboy/scp-action@master
         with:
-          local: $GITHUB_WORKSPACE/dist
-          remote: /var/www/html/funds
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.PASSWORD }}

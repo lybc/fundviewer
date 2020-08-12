@@ -128,7 +128,7 @@ export default {
     };
   },
   mounted: function () {
-    this.refreshAll();
+    this.updateAll();
   },
   methods: {
     onEnter(event) {
@@ -174,7 +174,6 @@ export default {
       for (var code in data) {
         this.update(code)
       }
-      this.refreshAll()
     },
 
     update(code) {
@@ -212,6 +211,7 @@ export default {
         }
         data[item.code] = item;
         localStorage.setItem("funds", JSON.stringify(data));
+        this.refreshAll()
       });
     },
   },

@@ -15,6 +15,13 @@ const router = new Router({
   mode: 'history'
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = `基王争霸 | ${to.meta.title}`
+  }
+  next()
+})
+
 new Vue({
   router,
   render: h => h(App),

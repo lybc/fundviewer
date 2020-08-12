@@ -20,19 +20,21 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-
+    
     # Runs a single command using the runners shell
     - name: Build pages
+      uses: actions/checkout@v2
       run: |
         npm install
         npm run-script build
     
     - name: Copy folder content recursively to remote
-        uses: garygrossgarten/github-action-scp@release
+        uses: appleboy/scp-action@master
         with:
           local: $GITHUB_WORKSPACE/dist
           remote: /var/www/html/funds
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.PASSWORD }}
+          source: "$GITHUB_WORKSPACE/dist/*"
+          target: "/var/www/html/funds"

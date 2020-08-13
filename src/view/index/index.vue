@@ -36,11 +36,10 @@
         <h2 class="logo">基王争霸，冲冲冲！！</h2>
       </Header>
       <Content :style="{padding: '0 50px'}">
-        
         <Row :style="{margin: '10px 0 0 0'}">
           <Alert type="warning">录入的基金数据保存在浏览器，如果更换电脑或浏览器需要重新录入</Alert>
         </Row>
-        
+
         <Row :style="{margin: '10px 0'}">
           <Input
             v-model="codes"
@@ -50,17 +49,40 @@
           />
         </Row>
 
-        <Row>
-          <Button :style="{margin: '10px 0'}" icon="ios-refresh" @click="updateAll()">刷新所有</Button>
+        <Row :style="{margin: '10px 0'}">
+          <Col span="2">
+            <Button icon="ios-refresh" @click="updateAll()">刷新所有</Button>
+          </Col>
+
+          <Col span="6">
+            <ButtonGroup>
+              <Button type="primary" ghost @click="refreshAll">
+                <Icon type="ios-pulse-outline" />全部
+              </Button>
+              <Button type="error" ghost @click="filterJz(1)">
+                <Icon type="ios-trending-up" />只看涨幅
+              </Button>
+              <Button type="success" ghost @click="filterJz(2)">
+                只看跌幅
+                <Icon type="ios-trending-down" />
+              </Button>
+            </ButtonGroup>
+          </Col>
         </Row>
 
         <Row>
           <Card>
             <div style="min-height: 200px;">
-              <Table :loading="loading" size="small" stripe :columns="tableHeader" :data="displayData">
+              <Table
+                :loading="loading"
+                size="small"
+                stripe
+                :columns="tableHeader"
+                :data="displayData"
+              >
                 <template slot-scope="{ row }" slot="expect_up_down">
                   <Tag
-                    v-if="parseFloat(row.expect_up_down) > 0"
+                    v-if="parseFloat(row.expect_up_down) >= 0"
                     color="red"
                   >+{{ row.expect_up_down }}%</Tag>
                   <Tag
@@ -92,6 +114,11 @@ export default {
     return {
       loading: false,
       codes: "",
+      mode: 0, // 控制筛选项
+      statistics: {
+        upCount: 0,
+        downCount: 0,
+      },
       tableHeader: [
         {
           title: "代码",
@@ -135,6 +162,28 @@ export default {
     this.updateAll();
   },
   methods: {
+    filterJz(type) {
+      let data = localStorage.getItem("funds");
+      data = JSON.parse(data);
+      let items = [];
+      for (const code in data) {
+        const upDown = parseFloat(data[code]["expect_up_down"]);
+        switch (type) {
+          case 1:
+            if (parseFloat(data[code]["expect_up_down"]) >= 0) {
+              items.push(data[code]);
+            }
+            break;
+          case 2:
+            if (parseFloat(data[code]["expect_up_down"]) < 0) {
+              items.push(data[code]);
+            }
+            break;
+        }
+      }
+      this.displayData = items;
+    },
+
     onEnter(event) {
       if (this.codes.length <= 0) {
         return;
@@ -164,26 +213,26 @@ export default {
 
     refreshAll() {
       let data = localStorage.getItem("funds");
-      data = JSON.parse(data)
-      this.displayData = []
+      data = JSON.parse(data);
+      this.displayData = [];
       for (var code in data) {
         this.displayData.push(data[code]);
       }
     },
-    
+
     async updateAll() {
       let data = localStorage.getItem("funds");
-      data = JSON.parse(data)
-      this.loading = true
+      data = JSON.parse(data);
+      this.loading = true;
       for (var code in data) {
-        await this.update(code)
+        await this.update(code);
       }
-      this.loading = false
+      this.loading = false;
     },
 
     update(code) {
       const url = `http://fund.lybc.site/api/js/${code}.js`;
-      return this.$http.get(url).then(response => {
+      return this.$http.get(url).then((response) => {
         let data = localStorage.getItem("funds");
         if (data && data.length > 0) {
           data = JSON.parse(data);
@@ -216,7 +265,7 @@ export default {
         }
         data[item.code] = item;
         localStorage.setItem("funds", JSON.stringify(data));
-        this.refreshAll()
+        this.refreshAll();
       });
     },
   },

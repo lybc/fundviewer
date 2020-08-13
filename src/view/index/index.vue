@@ -57,14 +57,13 @@
           <Col span="6">
             <ButtonGroup>
               <Button type="primary" ghost @click="refreshAll">
-                <Icon type="ios-pulse-outline" />全部
+                <Icon type="ios-pulse-outline" /> 全部
               </Button>
               <Button type="error" ghost @click="filterJz(1)">
-                <Icon type="ios-trending-up" />只看涨幅
+                <Icon type="ios-trending-up" /> 只看涨幅
               </Button>
               <Button type="success" ghost @click="filterJz(2)">
-                只看跌幅
-                <Icon type="ios-trending-down" />
+                <Icon type="ios-trending-down" /> 只看跌幅
               </Button>
             </ButtonGroup>
           </Col>

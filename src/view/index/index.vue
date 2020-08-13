@@ -36,9 +36,11 @@
         <h2 class="logo">基王争霸，冲冲冲！！</h2>
       </Header>
       <Content :style="{padding: '0 50px'}">
+        
         <Row :style="{margin: '10px 0 0 0'}">
           <Alert type="warning">录入的基金数据保存在浏览器，如果更换电脑或浏览器需要重新录入</Alert>
         </Row>
+        
         <Row :style="{margin: '10px 0'}">
           <Input
             v-model="codes"
@@ -47,14 +49,15 @@
             v-on:on-enter="onEnter"
           />
         </Row>
+
         <Row>
-          <Button icon="ios-refresh" @click="updateAll()">刷新所有</Button>
+          <Button :style="{margin: '10px 0'}" icon="ios-refresh" @click="updateAll()">刷新所有</Button>
         </Row>
 
         <Row>
           <Card>
             <div style="min-height: 200px;">
-              <Table stripe :columns="tableHeader" :data="displayData">
+              <Table :loading="loading" size="small" stripe :columns="tableHeader" :data="displayData">
                 <template slot-scope="{ row }" slot="expect_up_down">
                   <Tag
                     v-if="parseFloat(row.expect_up_down) > 0"
@@ -87,6 +90,7 @@
 export default {
   data() {
     return {
+      loading: false,
       codes: "",
       tableHeader: [
         {
@@ -144,7 +148,7 @@ export default {
       const codes = this.codes.split(",");
 
       codes.forEach((code) => {
-        this.update(code);
+        this.update(code.trim());
       });
 
       this.refreshAll();
@@ -153,7 +157,6 @@ export default {
     remove(code) {
       let data = localStorage.getItem("funds");
       data = JSON.parse(data);
-      console.log(data);
       delete data[code];
       localStorage.setItem("funds", JSON.stringify(data));
       this.refreshAll();
@@ -168,17 +171,19 @@ export default {
       }
     },
     
-    updateAll() {
+    async updateAll() {
       let data = localStorage.getItem("funds");
       data = JSON.parse(data)
+      this.loading = true
       for (var code in data) {
-        this.update(code)
+        await this.update(code)
       }
+      this.loading = false
     },
 
     update(code) {
       const url = `http://fund.lybc.site/api/js/${code}.js`;
-      this.$http.get(url).then((response) => {
+      return this.$http.get(url).then(response => {
         let data = localStorage.getItem("funds");
         if (data && data.length > 0) {
           data = JSON.parse(data);

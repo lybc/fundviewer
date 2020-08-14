@@ -54,7 +54,7 @@
             <Button icon="ios-refresh" @click="updateAll()">刷新所有</Button>
           </Col>
 
-          <Col span="6">
+          <Col span="12" :style="{float: 'right', 'text-align': 'right'}">
             <ButtonGroup>
               <Button type="primary" ghost @click="refreshAll">
                 <Icon type="ios-pulse-outline" /> 全部

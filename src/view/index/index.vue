@@ -239,7 +239,7 @@ export default {
           data = {};
         }
         let item = {
-          code: "",
+          code: code,
           name: "",
           jz_date: "",
           daily_jz: "",
@@ -250,7 +250,6 @@ export default {
         const result = response.data.replace("jsonpgz(", "").replace(");", "");
         if (response.status == 200 && result.length > 0) {
           const json = JSON.parse(result);
-          item.code = json.fundcode;
           item.name = json.name;
           item.jz_date = json.jzrq;
           item.daily_jz = json.dwjz;

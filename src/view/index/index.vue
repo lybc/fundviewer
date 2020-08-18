@@ -57,13 +57,13 @@
           <Col span="6">
             <ButtonGroup>
               <Button type="primary" ghost @click="refreshAll">
-                <Icon type="ios-pulse-outline" /> 全部
+                <Icon type="ios-pulse-outline" />全部
               </Button>
               <Button type="error" ghost @click="filterJz(1)">
-                <Icon type="ios-trending-up" /> 只看涨幅
+                <Icon type="ios-trending-up" />只看涨幅
               </Button>
               <Button type="success" ghost @click="filterJz(2)">
-                <Icon type="ios-trending-down" /> 只看跌幅
+                <Icon type="ios-trending-down" />只看跌幅
               </Button>
             </ButtonGroup>
           </Col>
@@ -247,18 +247,16 @@ export default {
           expect_up_down: "",
           expect_date: "",
         };
-
-        if (response.status == 200 && response.data.length > 0) {
-          const result = response.data
-            .replace("jsonpgz(", "")
-            .replace(");", "");
+        const result = response.data.replace("jsonpgz(", "").replace(");", "");
+        if (response.status == 200 && result.length > 0) {
           const json = JSON.parse(result);
           item.code = json.fundcode;
           item.name = json.name;
           item.jz_date = json.jzrq;
           item.daily_jz = json.dwjz;
           item.expect_jz = json.gsz;
-          (item.expect_up_down = json.gszzl), (item.expect_date = json.gztime);
+          item.expect_up_down = json.gszzl;
+          item.expect_date = json.gztime;
         } else {
           item.name = "查无此基";
         }
